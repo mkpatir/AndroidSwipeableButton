@@ -44,23 +44,23 @@ class SwipeableButton: FrameLayout {
 
     var buttonBackground = ContextCompat.getDrawable(context, R.drawable.bg_button_layout)
         set(value) {
-            field = value
             if (isBindingInitialized()){
                 binding.root.background = value ?: ContextCompat.getDrawable(
                         context,
                         R.drawable.bg_button_layout
                 )
+                field = value
             }
         }
 
     var buttonForeground = ContextCompat.getDrawable(context, R.drawable.bg_button)
         set(value) {
-            field = value
             if (isBindingInitialized()){
                 binding.swipeButton.background = value ?: ContextCompat.getDrawable(
                         context,
                         R.drawable.bg_button
                 )
+                field = value
             }
         }
 
@@ -78,6 +78,14 @@ class SwipeableButton: FrameLayout {
             }
         }
 
+    var swipeText = ""
+        set(value) {
+            if (isBindingInitialized()){
+                binding.swipeText.text = value
+                field = value
+            }
+        }
+
     private fun init(context: Context, attrs: AttributeSet? = null){
         binding = SwipeableButtonBinding.inflate(LayoutInflater.from(context), this, true)
         attrs?.let {
@@ -87,7 +95,7 @@ class SwipeableButton: FrameLayout {
                 isSwipeEnabled = getBoolean(R.styleable.SwipeableButton_isSwipeEnabled,true)
                 swipeFinishProgress = getFloat(R.styleable.SwipeableButton_swipeFinishProgress,0.9f).toDouble()
                 swipeButtonBackAnimationDuration = getFloat(R.styleable.SwipeableButton_btnBackAnimDuration,300f).toLong()
-
+                swipeText = getString(R.styleable.SwipeableButton_swipeText).orEmpty()
                 recycle()
             }
         }
@@ -119,6 +127,7 @@ class SwipeableButton: FrameLayout {
     private fun buttonMove(event: MotionEvent){
         if (event.rawX > binding.swipeButton.width / 2 && event.rawX + binding.swipeButton.width / 2 < width){
             binding.swipeButton.x = event.rawX - binding.swipeButton.width / 2
+            binding.swipeText.alpha = 1 - ((event.rawX + binding.swipeButton.width / 2) / width)
         }
     }
 
@@ -128,17 +137,33 @@ class SwipeableButton: FrameLayout {
             isButtonSwiped = true
             isSwipeEnabled = false
             binding.swipeButton.x = width.toFloat() - binding.swipeButton.width
+            binding.swipeText.alpha = 0f
         }
         else {
-            buttonMoveToBack()
+            moveToBack()
         }
     }
 
-    private fun buttonMoveToBack(){
-        ValueAnimator.ofFloat(binding.swipeButton.x, 0f).apply {
-            duration = swipeButtonBackAnimationDuration
+    private fun moveToBack(){
+        startButtonAnimation(binding.swipeButton.x,0f,swipeButtonBackAnimationDuration)
+        startTextAlphaAnimation(binding.swipeText.alpha,1f,swipeButtonBackAnimationDuration)
+    }
+
+    private fun startButtonAnimation(from: Float,to: Float,durationValue: Long){
+        ValueAnimator.ofFloat(from, to).apply {
+            duration = durationValue
             addUpdateListener {
                 binding.swipeButton.x = (it.animatedValue as Float)
+            }
+            start()
+        }
+    }
+
+    private fun startTextAlphaAnimation(from: Float,to: Float,durationValue: Long){
+        ValueAnimator.ofFloat(from, to).apply {
+            duration = durationValue
+            addUpdateListener {
+                binding.swipeText.alpha = (it.animatedValue as Float)
             }
             start()
         }
@@ -152,13 +177,8 @@ class SwipeableButton: FrameLayout {
         if (isSwiped().not()){
             isButtonSwiped = true
             isSwipeEnabled = false
-            ValueAnimator.ofFloat(0f, width.toFloat() - binding.swipeButton.width).apply {
-                duration = 300L
-                addUpdateListener {
-                    binding.swipeButton.x = (it.animatedValue as Float)
-                }
-                start()
-            }
+            startButtonAnimation(0f,width.toFloat() - binding.swipeButton.width,300L)
+            startTextAlphaAnimation(1f,0f,300L)
         }
     }
 
@@ -166,7 +186,7 @@ class SwipeableButton: FrameLayout {
         if (isSwiped()){
             isButtonSwiped = false
             isSwipeEnabled = true
-            buttonMoveToBack()
+            moveToBack()
         }
     }
 }

@@ -7,5 +7,6 @@
         <attr name="isSwipeEnabled" format="boolean"/>
         <attr name="swipeFinishProgress" format="float"/>
         <attr name="btnBackAnimDuration" format="float"/>
+        <attr name="swipeText" format="string"/>
     </declare-styleable>
 </resources>

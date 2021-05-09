@@ -6,10 +6,21 @@
     android:layout_height="56dp"
     android:background="@drawable/bg_button_layout">
 
+    <TextView
+        android:id="@+id/swipe_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="56dp"
+        android:gravity="center"
+        android:textSize="@dimen/def_text_size"
+        android:textColor="@color/white"
+        tools:text="Swipe to Unlock"/>
+
     <ImageView
         android:id="@+id/swipe_button"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:background="@drawable/bg_button"
         tools:ignore="ContentDescription" />
+
 </FrameLayout>
