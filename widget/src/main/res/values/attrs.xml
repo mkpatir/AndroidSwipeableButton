@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SwipeableButton">
+        <attr name="btnBackground" format="reference"/>
+        <attr name="btnForeground" format="reference"/>
+        <attr name="btnSrc" format="reference"/>
+        <attr name="isSwipeEnabled" format="boolean"/>
+        <attr name="swipeFinishProgress" format="float"/>
+        <attr name="btnBackAnimDuration" format="float"/>
+    </declare-styleable>
+</resources>
